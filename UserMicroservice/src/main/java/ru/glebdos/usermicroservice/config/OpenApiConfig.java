@@ -21,7 +21,7 @@ public class OpenApiConfig {
     public GroupedOpenApi customApi() {
         return GroupedOpenApi.builder()
                 .group("custom-api")
-                .pathsToMatch("/users/registration","/users/search")
+                .pathsToMatch("/users/registration","/users/search","/auth","/users/update")
                 .build();
     }
 

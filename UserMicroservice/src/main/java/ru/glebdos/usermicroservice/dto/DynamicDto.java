@@ -1,6 +1,7 @@
 package ru.glebdos.usermicroservice.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
@@ -32,6 +33,7 @@ public class DynamicDto {
 
     @Size(max = 100)
     private String address;
+
 
     @AssertTrue(message = "Для обновления должно быть указано хотя бы одно поле")
     public boolean isValid() {

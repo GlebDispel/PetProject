@@ -1,6 +1,7 @@
 package ru.glebdos.usermicroservice.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
@@ -46,16 +47,18 @@ public class User {
     @Column(name = "registration_time",updatable = false)
     private LocalDateTime userRegistrationTime;
 
+
     @Column(name = "password")
     private String password;
 
 
 
-    public User(String firstName, String secondName, String email, String phoneNumber, String address ) {
+    public User(String firstName, String secondName, String email, String phoneNumber, String address,String password ) {
         this.firstName = firstName;
         this.secondName = secondName;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.address = address;
+        this.password = password;
     }
 }

@@ -40,6 +40,7 @@ public class UserControllerTest {
     private UserController userController;
     private ObjectMapper objectMapper;
     private UserDto validUserDto;
+    private DynamicDto validDynamicDto;
 
 
     @BeforeEach
@@ -50,7 +51,9 @@ public class UserControllerTest {
         objectMapper = new ObjectMapper();
         validUserDto = new UserDto(
                 "John", "Doe", "john.doe@example.com",
-                "+79219008833", "123 Main St","1234567");
+                "+79219008833", "123 Main St","123456");
+        validDynamicDto = new DynamicDto("John", "Doe", "john.doe@example.com",
+                "+79219008833", "123 Main St");
     }
 
     @Test
@@ -168,20 +171,20 @@ public class UserControllerTest {
     @DisplayName("Успешное получение пользователя")
     @SneakyThrows
     void getUserByPhoneNumber_ShouldReturnOk_WhenValidPhoneNumber() {
-        String phoneNumber = validUserDto.getPhoneNumber();
+        String phoneNumber = validDynamicDto.getPhoneNumber();
 
-        when(userService.getUserByPhoneNumber(phoneNumber)).thenReturn(validUserDto);
+        when(userService.getUserByPhoneNumber(phoneNumber)).thenReturn(validDynamicDto);
 
         mockMvc.perform(get("/users/search")
                         .param("phoneNumber", phoneNumber)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.firstName").value(validUserDto.getFirstName()))
-                .andExpect(jsonPath("$.secondName").value(validUserDto.getSecondName()))
-                .andExpect(jsonPath("$.phoneNumber").value(validUserDto.getPhoneNumber()))
-                .andExpect(jsonPath("$.email").value(validUserDto.getEmail()))
-                .andExpect(jsonPath("$.address").value(validUserDto.getAddress()));
+                .andExpect(jsonPath("$.firstName").value(validDynamicDto.getFirstName()))
+                .andExpect(jsonPath("$.secondName").value(validDynamicDto.getSecondName()))
+                .andExpect(jsonPath("$.phoneNumber").value(validDynamicDto.getPhoneNumber()))
+                .andExpect(jsonPath("$.email").value(validDynamicDto.getEmail()))
+                .andExpect(jsonPath("$.address").value(validDynamicDto.getAddress()));
 
         verify(userService, times(1)).getUserByPhoneNumber(phoneNumber);
     }

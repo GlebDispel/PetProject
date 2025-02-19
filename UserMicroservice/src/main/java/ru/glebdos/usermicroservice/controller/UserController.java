@@ -40,7 +40,7 @@ public class UserController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<UserDto> getUserByPhoneNumber(@RequestParam String phoneNumber) {
+    public ResponseEntity<DynamicDto> getUserByPhoneNumber(@RequestParam String phoneNumber) {
 
         return ResponseEntity.ok(userService.getUserByPhoneNumber(phoneNumber));
 

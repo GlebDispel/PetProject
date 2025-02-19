@@ -7,6 +7,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -31,13 +32,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
-    private final SecurityConfig securityConfig = new SecurityConfig();
+    private final ObjectProvider<SecurityConfig> securityConfig;
     private final KafkaTemplate<String, Integer> kafkaTemplate;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper, KafkaTemplate<String, Integer> kafkaTemplate) {
+    public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper, ObjectProvider<SecurityConfig> securityConfig, KafkaTemplate<String, Integer> kafkaTemplate) {
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
+        this.securityConfig = securityConfig;
         this.kafkaTemplate = kafkaTemplate;
     }
 
@@ -46,7 +48,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public void createUser(UserDto userDto) throws ExecutionException, InterruptedException {
 
         LOGGER.info("Сервис создания вызван");
-        String encodedPassword = securityConfig.passwordEncoder().encode(userDto.getPassword());
+        String encodedPassword = securityConfig.getObject().passwordEncoder().encode(userDto.getPassword());
         User localUser = convertUserDtoToUser(userDto);
         localUser.setPassword(encodedPassword);
         setTimeRegistration(localUser);
@@ -56,13 +58,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public UserDto getUserByPhoneNumber(String phoneNumber) {
+    public DynamicDto getUserByPhoneNumber(String phoneNumber) {
 
         checkFormatPhoneNumber(phoneNumber);
         User user = findUserOrNotFound(phoneNumber);
 
 
-        return convertUserToUserDto(user);
+        return modelMapper.map(user, DynamicDto.class);
     }
 
     @Transactional

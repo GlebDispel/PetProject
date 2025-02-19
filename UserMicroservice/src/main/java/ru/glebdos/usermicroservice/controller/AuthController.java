@@ -42,7 +42,7 @@ public class AuthController {
             authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authDto.getUsername(), authDto.getPassword()));
         }catch (BadCredentialsException e) {
-            return new ResponseEntity<>("Не прошло",HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>("Аутентификация неуспешна",HttpStatus.UNAUTHORIZED);
         }
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = jwtCore.generateToken(authentication);

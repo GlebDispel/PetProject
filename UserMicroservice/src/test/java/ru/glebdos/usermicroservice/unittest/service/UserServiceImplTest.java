@@ -40,7 +40,7 @@ public class UserServiceImplTest {
                 "Fred", "Pink",
                 "fred@mail.ru", "+79998887766", "street 3", "1234567");
         user = new User("Fred", "Pink",
-                "fred@mail.ru", "+79998887766", "street 3");
+                "fred@mail.ru", "+79998887766", "street 3","1234567");
     }
 
     @SneakyThrows
@@ -67,7 +67,7 @@ public class UserServiceImplTest {
         when(userRepository.findByPhoneNumber(phoneNumber)).thenReturn(Optional.of(user));
         when(modelMapper.map(user, UserDto.class)).thenReturn(userDto);
 
-        UserDto returnedUserDto = userService.getUserByPhoneNumber(phoneNumber);
+        DynamicDto returnedUserDto = userService.getUserByPhoneNumber(phoneNumber);
 
         verify(userRepository, times(1)).findByPhoneNumber(phoneNumber);
         assertEquals(user.getFirstName(), returnedUserDto.getFirstName());

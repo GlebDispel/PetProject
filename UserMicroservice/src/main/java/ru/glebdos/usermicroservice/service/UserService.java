@@ -10,7 +10,7 @@ public interface UserService {
 
 
      void createUser(UserDto userDto) throws ExecutionException, InterruptedException;
-     UserDto getUserByPhoneNumber(String phoneNumber);
+     DynamicDto getUserByPhoneNumber(String phoneNumber);
 
      void updateUser(DynamicDto updateUserDto, String phoneNumber);
 

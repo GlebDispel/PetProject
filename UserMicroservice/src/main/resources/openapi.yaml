@@ -60,7 +60,7 @@ paths:
       tags:
         - User
       summary: Поиск пользователя
-      description: Ищет пользователя по номеру телефона
+      description: Ищет пользователя по номеру телефона. Доступно только авторизованным пользователям.
       operationId: searchUser
       parameters:
         - name: phoneNumber
@@ -76,7 +76,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserDto'
+                $ref: '#/components/schemas/DynamicDto'
         400:
           description: Неправильный формат номера телефона
           content:
@@ -95,8 +95,127 @@ paths:
               example:
                 message: "Неавторизованный пользователь, доступ запрещен"
                 timestamp: 1739711288975
-
-
+  /auth:
+    post:
+      tags:
+        - Authentication
+      summary: Аутентификация пользователя
+      description: Проверка пользователя и возвращение JWT токена
+      operationId: userAuth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthDto'
+      responses:
+        200:
+          description: Успешная аутентификация
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          headers:
+            Authorization:
+              description: JWT-токен
+              schema:
+                type: string
+        401:
+          description: Ошибка аутентификации
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Аутентификация неуспешна"
+  /users/update:
+    post:
+      tags:
+        - User
+      summary: Обновление пользователя
+      description: Обновление одного из парраметров пользователя
+      operationId: userUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DynamicDto'
+      parameters:
+        - name: phoneNumber
+          in: query
+          required: true
+          description: Номер телефона для поиска пользователя
+          schema:
+            type: string
+            example: "+79219008833"
+      responses:
+        200:
+          description: Успешное обновление
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Пользователь обновлен"
+        401:
+          description: Неавторизованный пользователь
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: "Неавторизованный пользователь, доступ запрещен"
+                timestamp: 1739711288975
+        400:
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: "Для обновления должно быть указано хотя бы одно поле"
+                timestamp: 1739711288975
+  /users/delete:
+    delete:
+      tags:
+        - User
+      summary: Удаление пользователя
+      description: Удаляет пользователя из базы данных
+      operationId: userDelete
+      parameters:
+        - name: phoneNumber
+          in: query
+          required: true
+          description: Номер телефона для удаления пользователя
+          schema:
+            type: string
+            example: "+79219008833"
+      responses:
+        200:
+          description: Успешное удаление
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Пользователь удален"
+        401:
+          description: Неавторизованный пользователь
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: "Неавторизованный пользователь, доступ запрещен"
+                timestamp: 1739711288975
+        400:
+          description: Неправильный формат номера телефона
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: "Неправильный формат телефонного номера. Ожидаемый формат: +79219008833"
+                timestamp: 1739711288975
 
 components:
   schemas:
@@ -153,3 +272,24 @@ components:
           format: int64
           description: Временная метка (timestamp) возникновения ошибки
           example: 1739711288975
+    AuthDto:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          example: user@example.ru
+          description: Почтовый адресс
+        password:
+          type: string
+          example: 123456789
+          description: Пароль пользователя
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+ - BearerAuth: [ ]

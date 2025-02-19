@@ -36,6 +36,7 @@ public class UserDto {
     @Size(max = 100)
     private String address;
 
+
     @NotNull
     @Size(min = 6, message = "Пароль должен содержать не менее 6 символов")
     private String password; // Новое поле
